@@ -1,6 +1,6 @@
 package com.commonsemantics.olina.plugin.connector.pubmed
 
-import com.commonsemantics.olina.connector.bibliographic.BibliographicIdentifier
+import com.commonsemantics.olina.plugin.connector.bibliographic.BibliographicIdentifier
 import grails.test.mixin.Mock
 import grails.test.mixin.TestFor
 import grails.test.mixin.integration.Integration
