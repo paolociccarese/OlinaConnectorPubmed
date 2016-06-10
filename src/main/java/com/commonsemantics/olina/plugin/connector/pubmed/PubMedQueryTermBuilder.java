@@ -128,19 +128,23 @@ public class PubMedQueryTermBuilder {
     }
 
     private String searchClause(List<String> fieldList,String fieldTag){
+        System.out.println(fieldTag);
+        if(fieldList.size()>0) System.out.println(fieldList.get(0));
         StringBuilder builder = new StringBuilder();
         String connectingOp = "+AND+";
         for(String fieldValue: fieldList){
-            builder.append(this.cleanupSearchTerm(fieldValue, fieldTag));
-            builder.append("[");
-            builder.append(fieldTag);
-            builder.append("]");
-            builder.append(connectingOp);
+            builder.append(fieldValue);
+            //builder.append(this.cleanupSearchTerm(fieldValue, fieldTag));
+//            builder.append("[");
+//            builder.append(fieldTag);
+//            builder.append("]");
+//            builder.append(connectingOp);
         }
-        if (builder.length() > 0){
-            return builder.substring(0,builder.length() - connectingOp.length());
-        }
-        return "";
+        return builder.toString();
+//        if (builder.length() > 0){
+//            return builder.substring(0,builder.length() - connectingOp.length());
+//        }
+        //return "";
     }
     /*
     private String getPublicationTypeSearchClause(){

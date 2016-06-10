@@ -1,13 +1,13 @@
 package com.commonsemantics.olina.plugin.connector.pubmed
 
-import com.commonsemantics.olina.plugin.connector.bibliographic.BibliographicIdentifier
+import com.commonsemantics.olina.plugin.connector.bibliographic.BibliographicSearchResults
+import com.commonsemantics.olina.plugin.connector.bibliographic.IBibliographicObject
 import com.commonsemantics.olina.plugin.connector.bibliographic.IBibliographyManagetConnector
 import com.commonsemantics.olina.plugin.connector.pubmed.dtd150101.PubMedManager
 import com.commonsemantics.olina.plugin.connector.pubmed.dtd150101.PubmedArticleObject
 import com.commonsemantics.olina.plugin.connector.pubmed.dtd150101.xml.PublicationType
 import org.grails.web.json.JSONArray
 import org.grails.web.json.JSONObject
-
 /**
  * @author Dr. Paolo Ciccarese http://paolociccarese.info
  */
@@ -22,22 +22,56 @@ class PubMedConnectorService implements IBibliographyManagetConnector {
      */
     @Override
     void initialize() {
-        // http://www.biosciencewriters.com/Digital-identifiers-of-scientific-literature-PMID-PMCID-NIHMS-DOI-and-how-to-use-them.aspx
-        for(EPubMedBibliographicIdentifiers bi: EPubMedBibliographicIdentifiers.list()) {
-            connectorsManagerService.registerBibliographicObjectIdentifier(bi.acronym, bi.name);
+        for(EPubMedBibliographicSearchType bi: EPubMedBibliographicSearchType.list()) {
+            if(bi.isIdentifier) connectorsManagerService.registerBibliographicObjectIdentifier(bi.name, bi.name);
         }
     }
 
     @Override
-    JSONObject getArticleById(String bibliographicIdentifierAcronym, String id) {
+    JSONObject getBibliographicObjectByIdAsJson(String bibliographicIdentifierAcronym, String id) {
+        return convertExternalPubmedArticle(getBibliographicObjectById(bibliographicIdentifierAcronym, id).getResult());
+    }
+
+    @Override
+    BibliographicSearchResults getBibliographicObjectById(String bibliographicIdentifierAcronym, String id) {
+        return getPubMedManager().getBibliographicObjectById(fetchIdentifierByAcronym(bibliographicIdentifierAcronym), id);
+    }
+
+    @Override
+    BibliographicSearchResults getBibliographicObjects(String bibliographicIdentifierAcronym, List<String> ids) {
+        return getPubMedManager().getBibliographicObjects(fetchIdentifierByAcronym(bibliographicIdentifierAcronym).name, ids);
+    }
+
+    JSONArray getBibliographicObjectsAsJson(String bibliographicIdentifierAcronym, List<String> ids) {
+        JSONArray res = new JSONArray();
+        List<IBibliographicObject> results = getBibliographicObjects(fetchIdentifierByAcronym(bibliographicIdentifierAcronym).name, ids).getResults()
+        for(IBibliographicObject result: results) {
+            res.add(convertExternalPubmedArticle(result));
+        }
+        return res;
+    }
+
+    @Override
+    BibliographicSearchResults getBibliographicObjects(String typeQuery, List<String> queryTerms, Integer range, Integer offset) {
+        return null
+    }
+
+    @Override
+    BibliographicSearchResults getBibliographicObjects(String typeQuery, List<String> queryTerms, Integer pubStartMonth, Integer pubStartYear, Integer pubEndMonth, Integer pubEndYear, Integer range, Integer offset) {
+        return null
+    }
+
+    private PubMedManager getPubMedManager() {
         log.info("proxy: " + grailsApplication.config.olina.server.proxy.host + "-" + grailsApplication.config.olina.server.proxy.port) ;
-        BibliographicIdentifier bi = connectorsManagerService.getBibliographicIdentifier(bibliographicIdentifierAcronym);
-        PubMedManager pa = new PubMedManager(
+        return new PubMedManager(
                 (grailsApplication.config.olina.server.proxy.host.isEmpty()?"":grailsApplication.config.olina.server.proxy.host),
                 (grailsApplication.config.olina.server.proxy.port.isEmpty()?"":grailsApplication.config.olina.server.proxy.port));
+    }
 
-        PubmedArticleObject xpa = pa.getArticleByPubMedId(id);
-        return convertExternalPubmedArticle(xpa);
+    private EPubMedBibliographicSearchType fetchIdentifierByAcronym(String bibliographicIdentifierAcronym) {
+        EPubMedBibliographicSearchType identifier = EPubMedBibliographicSearchType.findByAcronym(bibliographicIdentifierAcronym);
+        if (identifier == null) throw new RuntimeException("Identifier name not found: " + bibliographicIdentifierAcronym)
+        return identifier;
     }
 
     /**
