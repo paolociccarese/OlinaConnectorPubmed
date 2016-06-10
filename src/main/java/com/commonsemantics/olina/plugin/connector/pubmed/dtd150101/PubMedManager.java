@@ -181,6 +181,26 @@ public class PubMedManager {
 
             BibliographicSearchResults res = new BibliographicSearchResults(details, convertedResults);
             return res;
+        } else if(typeQuery.equals(EPubMedBibliographicSearchType.TITLE_AND_ABSTRACT.name)) {
+            logger.info("Querying title");
+            PubMedQueryTermBuilder termBuilder = new PubMedQueryTermBuilder();
+            termBuilder.addJournalArticleTitleWords(queryTerms);
+
+            this.maxNumberSearchResults = 10;
+            Map<Integer,PubmedArticleSet> results;
+            logger.error(termBuilder.toString());
+            results = pubmedSearchAgent.fetchWithStats((new URLEncoder()).encode(termBuilder.toString()), this.getMaxNumberSearchResults(), 0);
+
+            int totalResults = results.keySet().iterator().next();
+            List<IBibliographicObject> convertedResults = convertToExternalPubmedArticles(results.values().iterator().next());
+
+            Map<String,String> details = new HashMap<String,String>();
+            details.put("total", Integer.toString(totalResults));
+            details.put("range", Integer.toString(this.getMaxNumberSearchResults()));
+            details.put("offset", Integer.toString(0));
+
+            BibliographicSearchResults res = new BibliographicSearchResults(details, convertedResults);
+            return res;
         }
         return null;
     }

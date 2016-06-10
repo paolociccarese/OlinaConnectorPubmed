@@ -13,7 +13,8 @@ public enum EPubMedBibliographicSearchType {
     PMID("PMID", "PubMed Identifier", true),
     PMCID("PMCID", "PubMed Central Identifier", true),
     NIHMSID("NIHMSID", "NIH Manuscript Submission", true),
-    TITLE("title", "Title", false);
+    TITLE("title", "Title", false),
+    TITLE_AND_ABSTRACT("title-and-abstract", "Title and Abstract", false);
 
     public final String name;
     public final String description;
@@ -25,9 +26,9 @@ public enum EPubMedBibliographicSearchType {
         this.isIdentifier = isIdentifier;
     }
 
-    public static EPubMedBibliographicSearchType findByAcronym(String acronym) {
+    public static EPubMedBibliographicSearchType findByName(String name) {
         for (EPubMedBibliographicSearchType i : EPubMedBibliographicSearchType.values()) {
-            if(i.name.equals(acronym)) {
+            if(i.name.equals(name)) {
                 return i;
             }
         }

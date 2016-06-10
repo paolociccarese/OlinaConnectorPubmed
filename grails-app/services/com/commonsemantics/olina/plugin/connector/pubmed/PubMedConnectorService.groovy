@@ -34,17 +34,17 @@ class PubMedConnectorService implements IBibliographyManagetConnector {
 
     @Override
     BibliographicSearchResults getBibliographicObjectById(String bibliographicIdentifierAcronym, String id) {
-        return getPubMedManager().getBibliographicObjectById(fetchIdentifierByAcronym(bibliographicIdentifierAcronym), id);
+        return getPubMedManager().getBibliographicObjectById(fetchSearchType(bibliographicIdentifierAcronym), id);
     }
 
     @Override
     BibliographicSearchResults getBibliographicObjects(String bibliographicIdentifierAcronym, List<String> ids) {
-        return getPubMedManager().getBibliographicObjects(fetchIdentifierByAcronym(bibliographicIdentifierAcronym).name, ids);
+        return getPubMedManager().getBibliographicObjects(fetchSearchType(bibliographicIdentifierAcronym).name, ids);
     }
 
     JSONArray getBibliographicObjectsAsJson(String bibliographicIdentifierAcronym, List<String> ids) {
         JSONArray res = new JSONArray();
-        List<IBibliographicObject> results = getBibliographicObjects(fetchIdentifierByAcronym(bibliographicIdentifierAcronym).name, ids).getResults()
+        List<IBibliographicObject> results = getBibliographicObjects(fetchSearchType(bibliographicIdentifierAcronym).name, ids).getResults()
         for(IBibliographicObject result: results) {
             res.add(convertExternalPubmedArticle(result));
         }
@@ -68,9 +68,9 @@ class PubMedConnectorService implements IBibliographyManagetConnector {
                 (grailsApplication.config.olina.server.proxy.port.isEmpty()?"":grailsApplication.config.olina.server.proxy.port));
     }
 
-    private EPubMedBibliographicSearchType fetchIdentifierByAcronym(String bibliographicIdentifierAcronym) {
-        EPubMedBibliographicSearchType identifier = EPubMedBibliographicSearchType.findByAcronym(bibliographicIdentifierAcronym);
-        if (identifier == null) throw new RuntimeException("Identifier name not found: " + bibliographicIdentifierAcronym)
+    private EPubMedBibliographicSearchType fetchSearchType(String searchTypeName) {
+        EPubMedBibliographicSearchType identifier = EPubMedBibliographicSearchType.findByName(searchTypeName);
+        if (identifier == null) throw new RuntimeException("Search type name not found: " + searchTypeName)
         return identifier;
     }
 

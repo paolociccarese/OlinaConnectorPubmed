@@ -103,6 +103,54 @@ class PubMedConnectorServiceSpec extends Specification {
         println pubMedConnectorService.getBibliographicObjectsAsJson("title", ids);
         expect: true==true
     }
+
+    void "test title json 2"() {
+        pubMedConnectorService.initialize();
+        List<String> ids = new ArrayList<>();
+        ids.add("An open annotation ontology for science");
+        println pubMedConnectorService.getBibliographicObjectsAsJson("title", ids);
+        expect: true==true
+    }
+
+    void "test title json 3"() {
+        pubMedConnectorService.initialize();
+        List<String> ids = new ArrayList<>();
+        ids.add("open annotation for science");
+        println pubMedConnectorService.getBibliographicObjectsAsJson("title", ids);
+        expect: true==true
+    }
+
+    void "test title json 4"() {
+        pubMedConnectorService.initialize();
+        List<String> ids = new ArrayList<>();
+        ids.add("ontology science");
+        println pubMedConnectorService.getBibliographicObjectsAsJson("title", ids);
+        expect: true==true
+    }
+
+    void "test abstract json 5"() {
+        pubMedConnectorService.initialize();
+        List<String> ids = new ArrayList<>();
+        ids.add("between the rich and expressive collection of published biomedical ontologies, and the natural language expression of biomedical papers consumed on a daily basis by scientific researchers");
+        println pubMedConnectorService.getBibliographicObjectsAsJson("title-and-abstract", ids);
+        expect: true==true
+    }
+
+    void "test abstract json 6"() {
+        pubMedConnectorService.initialize();
+        List<String> ids = new ArrayList<>();
+        ids.add("An open annotation ontology for science on web 3.0");
+        println pubMedConnectorService.getBibliographicObjectsAsJson("title-and-abstract", ids);
+        expect: true==true
+    }
+
+    void "test abstract json 7"() {
+        pubMedConnectorService.initialize();
+        List<String> ids = new ArrayList<>();
+        ids.add("An open annotation ontology for science");
+        println pubMedConnectorService.getBibliographicObjectsAsJson("title-and-abstract", ids);
+        expect: true==true
+    }
 }
 
 
